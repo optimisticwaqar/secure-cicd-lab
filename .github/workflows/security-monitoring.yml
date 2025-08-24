@@ -1,0 +1,53 @@
+name: Security Monitoring
+
+on:
+  schedule:
+    - cron: '0 6 * * MON'  # Weekly on Monday
+  workflow_dispatch:
+
+jobs:
+  dependency-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+        
+    - name: Install security tools
+      run: |
+        pip install safety bandit semgrep
+        
+    - name: Run dependency vulnerability scan
+      run: |
+        echo "🔍 Scanning dependencies for vulnerabilities..."
+        safety check --json --output safety-report.json || true
+        
+    - name: Run static analysis
+      run: |
+        echo "🔍 Running static security analysis..."
+        bandit -r . -f json -o bandit-report.json || true
+        semgrep --config=auto --json --output=semgrep-report.json . || true
+        
+    - name: Check for secrets in code
+      run: |
+        echo "🔍 Scanning for exposed secrets..."
+        
+        # Check for common secret patterns
+        grep -r -n -E "(password|passwd|pwd)\s*=\s*['\"][^'\"]*['\"]" . --exclude-dir=.git --exclude="*.md" || echo "No hardcoded passwords found"
+        grep -r -n -E "(api_key|apikey)\s*=\s*['\"][^'\"]*['\"]" . --exclude-dir=.git --exclude="*.md" || echo "No hardcoded API keys found"
+        grep -r -n -E "(secret|token)\s*=\s*['\"][^'\"]*['\"]" . --exclude-dir=.git --exclude="*.md" || echo "No hardcoded secrets found"
+        
+    - name: Upload security reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: security-reports
+        path: |
+          safety-report.json
+          bandit-report.json
+          semgrep-report.json
