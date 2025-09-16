@@ -18,4 +18,5 @@ def health():
     return jsonify({'status': 'healthy', 'checks': {'database': 'ok'}})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=int(os.getenv('PORT', 5000)))API_KEY = "sk-1234567890abcdef"
+    app.run(host='0.0.0.0', port=int(os.getenv('PORT', 5000)))
+    API_KEY = "sk-1234567890abcdef"
