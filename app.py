@@ -20,4 +20,4 @@ def health():
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.getenv('PORT', 5000)))
     
-API_KEY = "sk-1234567890abcdef"
+api_key = "sk-1234567890abcdef"
