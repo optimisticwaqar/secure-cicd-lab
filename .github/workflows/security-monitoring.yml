@@ -26,13 +26,9 @@ jobs:
     - name: Run dependency vulnerability scan
       run: |
         echo "🔍 Scanning dependencies for vulnerabilities..."
-        if safety --help | grep -q -- "--json-report"; then
-          echo "Using Safety v3 CLI"
-          safety check -r requirements.txt --json-report safety-report.json || true
-        else
-          echo "Using Safety v2 CLI"
-          safety check -r requirements.txt --json --output safety-report.json || true
-        fi
+        pip install safety==2.3.5   # 🔒 Pin to v2.3.5
+        safety check -r requirements.txt --json --output safety-report.json || true
+
         
     - name: Run static analysis
       run: |
