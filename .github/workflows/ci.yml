@@ -29,9 +29,10 @@ jobs:
         
     - name: Run security scan
       run: |
-        pip install bandit safety==2.3.5   # 🔒 Pin to v2.3.5
+        pip install bandit safety==2.3.5
         bandit -r . -f json -o bandit-report.json || true
-        safety check -r requirements.txt --json --output safety-report.json || true
+        safety check -r requirements.txt --json > safety-report.json || true
+
 
     - name: Run tests
       run: |

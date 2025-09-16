@@ -26,8 +26,10 @@ jobs:
     - name: Run dependency vulnerability scan
       run: |
         echo "🔍 Scanning dependencies for vulnerabilities..."
-        pip install safety==2.3.5   # 🔒 Pin to v2.3.5
-        safety check -r requirements.txt --json --output safety-report.json || true
+        pip install safety==2.3.5
+        safety check -r requirements.txt --json > safety-report.json || true
+        echo "✅ Safety report generated at safety-report.json"
+
 
         
     - name: Run static analysis
