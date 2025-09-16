@@ -44,7 +44,7 @@ jobs:
         grep -r -n -E "(secret|token)\s*=\s*['\"][^'\"]*['\"]" . --exclude-dir=.git --exclude="*.md" || echo "No hardcoded secrets found"
         
     - name: Upload security reports
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: security-reports
         path: |
