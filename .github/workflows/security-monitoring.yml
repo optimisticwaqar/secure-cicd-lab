@@ -26,7 +26,13 @@ jobs:
     - name: Run dependency vulnerability scan
       run: |
         echo "🔍 Scanning dependencies for vulnerabilities..."
-        safety check --json --output safety-report.json || true
+        if safety --help | grep -q -- "--json-report"; then
+          echo "Using Safety v3 CLI"
+          safety check -r requirements.txt --json-report safety-report.json || true
+        else
+          echo "Using Safety v2 CLI"
+          safety check -r requirements.txt --json --output safety-report.json || true
+        fi
         
     - name: Run static analysis
       run: |
@@ -37,8 +43,6 @@ jobs:
     - name: Check for secrets in code
       run: |
         echo "🔍 Scanning for exposed secrets..."
-        
-        # Check for common secret patterns
         grep -r -n -E "(password|passwd|pwd)\s*=\s*['\"][^'\"]*['\"]" . --exclude-dir=.git --exclude="*.md" || echo "No hardcoded passwords found"
         grep -r -n -E "(api_key|apikey)\s*=\s*['\"][^'\"]*['\"]" . --exclude-dir=.git --exclude="*.md" || echo "No hardcoded API keys found"
         grep -r -n -E "(secret|token)\s*=\s*['\"][^'\"]*['\"]" . --exclude-dir=.git --exclude="*.md" || echo "No hardcoded secrets found"
